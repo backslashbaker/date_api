@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 app.get('/time', (req, res) => {
   timeDate = new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })
 
-  res.send(`Today is ${timeDate}`)
+  res.json({ time: timeDate })
 })
 
 app.listen(port, () => {
