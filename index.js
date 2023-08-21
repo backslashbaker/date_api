@@ -1,6 +1,5 @@
-//TODO: Convert entire project to ESM
-const express = require('express')
-const dotenv = require('dotenv')
+import express from 'express'
+import dotenv from 'dotenv'
 
 dotenv.config()
 
