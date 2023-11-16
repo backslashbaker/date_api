@@ -5,14 +5,14 @@ info:
 paths:
   /:
     get:
-      summary: Get Hello World message
+      summary: Get API specification
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               example:
-                message: Hello World
+                message:
   /time/{continent}/{city}/{timezone}:
     get:
       summary: Get time information based on continent, city, and timezone
@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               example:
-                time: '2023-11-15T12:30:00'  # Adjust the format based on your actual response
+                time: '2023-11-15T12:30:00'
   /time:
     get:
       summary: Get UTC time
@@ -51,7 +51,7 @@ paths:
           content:
             application/json:
               example:
-                time: '2023-11-15T12:30:00'  # Adjust the format based on your actual response
+                time: '2023-11-15T12:30:00'
 servers:
   - url: http://localhost:{port}
     description: Local development server

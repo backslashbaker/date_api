@@ -1,14 +1,28 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import yaml from 'yamljs'
 
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000
+const openapiSpecification = yaml.load('./date-api.yml')
 
 //TODO: Should return an Open API spec for the API in JSON format
 app.get('/', (req, res) => {
-  res.json({ message: 'Hello World' })
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>OpenAPI Documentation</title>
+    </head>
+    <body>
+      <pre>${yaml.stringify(openapiSpecification, null, 2)}</pre>
+    </body>
+    </html>
+  `)
 })
 
 app.get('/time/:continent?/:city?/:timezone?', (req, res) => {
