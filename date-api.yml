@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: Date API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Get Hello World message
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                message: Hello World
+  /time/{continent}/{city}/{timezone}:
+    get:
+      summary: Get time information based on continent, city, and timezone
+      parameters:
+        - name: continent
+          in: path
+          required: true
+          description: Continent name
+          schema:
+            type: string
+        - name: city
+          in: path
+          required: true
+          description: City name
+          schema:
+            type: string
+        - name: timezone
+          in: path
+          required: true
+          description: Timezone
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                time: '2023-11-15T12:30:00'  # Adjust the format based on your actual response
+  /time:
+    get:
+      summary: Get UTC time
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                time: '2023-11-15T12:30:00'  # Adjust the format based on your actual response
+servers:
+  - url: http://localhost:{port}
+    description: Local development server
