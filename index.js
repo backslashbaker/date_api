@@ -6,7 +6,8 @@ dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000
-const openapiSpecification = yaml.load('./date-api.yml')
+const apiSpecification = yaml.load('./date-api.yml')
+const yamlString = yaml.stringify(apiSpecification, null, 2)
 
 //TODO: Should return an Open API spec for the API in JSON format
 app.get('/', (req, res) => {
@@ -19,7 +20,7 @@ app.get('/', (req, res) => {
       <title>OpenAPI Documentation</title>
     </head>
     <body>
-      <pre>${yaml.stringify(openapiSpecification, null, 2)}</pre>
+      <pre>${yamlString}</pre>
     </body>
     </html>
   `)
