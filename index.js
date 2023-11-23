@@ -1,40 +1,55 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import yaml from 'yamljs'
+import { parse } from 'yaml'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000
-const apiSpecification = yaml.load('./date-api.yml')
-const yamlString = yaml.stringify(apiSpecification, null, 2)
+const apiSpecification = parse(
+  readFileSync(resolve('date-api.yml')).toString('utf-8')
+)
+const validTimeZones = Intl.supportedValuesOf('timeZone')
 
 //TODO: Should return an Open API spec for the API in JSON format
+
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>OpenAPI Documentation</title>
-    </head>
-    <body>
-      <pre>${yamlString}</pre>
-    </body>
-    </html>
-  `)
+  res.json(apiSpecification)
+  {
+    console.log(Intl.supportedValuesOf('timeZone'))
+  }
 })
 
-app.get('/time/:continent?/:city?/:timezone?', (req, res) => {
-  const { continent, city, timezone } = req.params
+//TODO: two different routes for timezone (required) and another for time/continent/city (optional). Both should return the current time in the specified timezone /time/:timezone? and /time/:continent?/:city?
+app.get('/time/:timezone', (req, res) => {
+  const { timezone } = req.params
   let timeDate
+
+  if (!validTimeZones.includes(timeZone)) {
+    throw new InvalidTimezoneError()
+  }
 
   if (timezone) {
     timeDate = new Date().toLocaleString('en-GB', {
       timeZone: timezone,
     })
-  } else if (continent && city) {
+  } else {
+    timeDate = new Date().toUTCString()
+  }
+  res.json({ time: timeDate })
+})
+
+app.get('/time/:continent?/:city?', (req, res) => {
+  const { continent, city } = req.params
+  let timeDate
+
+  if (!validTimeZones.includes(timeZone)) {
+    throw new InvalidTimezoneError()
+  }
+
+  if (continent && city) {
     timeDate = new Date().toLocaleString('en-GB', {
       timeZone: `${continent}/${city}`,
     })
@@ -43,6 +58,24 @@ app.get('/time/:continent?/:city?/:timezone?', (req, res) => {
   }
   res.json({ time: timeDate })
 })
+
+// app.get('/time/:continent?/:city?/:timezone?', (req, res) => {
+//   const { continent, city, timezone } = req.params
+//   let timeDate
+
+//   if (timezone) {
+//     timeDate = new Date().toLocaleString('en-GB', {
+//       timeZone: timezone,
+//     })
+//   } else if (continent && city) {
+//     timeDate = new Date().toLocaleString('en-GB', {
+//       timeZone: `${continent}/${city}`,
+//     })
+//   } else {
+//     timeDate = new Date().toUTCString()
+//   }
+//   res.json({ time: timeDate })
+// })
 
 app.listen(port, () => {
   console.log(`Listening at port: ${port}`)
