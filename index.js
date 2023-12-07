@@ -12,70 +12,58 @@ const apiSpecification = parse(
   readFileSync(resolve('date-api.yml')).toString('utf-8')
 )
 const validTimeZones = Intl.supportedValuesOf('timeZone')
+const lowerCaseTimeZones = validTimeZones.map((timezone) =>
+  timezone.toLowerCase()
+)
 
 //TODO: Should return an Open API spec for the API in JSON format
 
 app.get('/', (req, res) => {
   res.json(apiSpecification)
-  {
-    console.log(Intl.supportedValuesOf('timeZone'))
-  }
 })
 
 //TODO: two different routes for timezone (required) and another for time/continent/city (optional). Both should return the current time in the specified timezone /time/:timezone? and /time/:continent?/:city?
-app.get('/time/:timezone', (req, res) => {
+app.get('/time/:timezone?', (req, res) => {
   const { timezone } = req.params
-  let timeDate
 
-  if (!validTimeZones.includes(timeZone)) {
-    throw new InvalidTimezoneError()
+  if (timezone && !validTimeZones.includes(timeZone)) {
+    return res.status(404).json({ error: 'Timezone was not found' })
   }
 
-  if (timezone) {
-    timeDate = new Date().toLocaleString('en-GB', {
-      timeZone: timezone,
-    })
-  } else {
-    timeDate = new Date().toUTCString()
-  }
-  res.json({ time: timeDate })
+  const time = new Date().toLocaleString('en-GB', {
+    timeZone: timezone ?? 'UTC',
+  })
+
+  res.json({ time })
 })
 
-app.get('/time/:continent?/:city?', (req, res) => {
+app.get('/time/:continent/:city', (req, res) => {
   const { continent, city } = req.params
-  let timeDate
 
-  if (!validTimeZones.includes(timeZone)) {
-    throw new InvalidTimezoneError()
+  if (!validTimeZones.includes(`${continent}/${city}`)) {
+    return res.status(404).json({ error: 'Continent and City was not found' })
   }
 
-  if (continent && city) {
-    timeDate = new Date().toLocaleString('en-GB', {
-      timeZone: `${continent}/${city}`,
-    })
-  } else {
-    timeDate = new Date().toUTCString()
-  }
-  res.json({ time: timeDate })
+  const time = new Date().toLocaleString('en-GB', {
+    timeZone: `${continent}/${city}`,
+  })
+
+  res.json({ time })
+  // let timeDate
+
+  // if (!validTimeZones.includes(`${continent}/${city}`)) {
+  //   return res.status(404).json({ error: 'Continent and City was not found' })
+  // }
+
+  // if (continent && city) {
+  //   timeDate = new Date().toLocaleString('en-GB', {
+  //     timeZone: `${continent}/${city}`,
+  //   })
+  // } else {
+  //   timeDate = new Date().toUTCString()
+  // }
+  // res.json({ time: timeDate })
 })
-
-// app.get('/time/:continent?/:city?/:timezone?', (req, res) => {
-//   const { continent, city, timezone } = req.params
-//   let timeDate
-
-//   if (timezone) {
-//     timeDate = new Date().toLocaleString('en-GB', {
-//       timeZone: timezone,
-//     })
-//   } else if (continent && city) {
-//     timeDate = new Date().toLocaleString('en-GB', {
-//       timeZone: `${continent}/${city}`,
-//     })
-//   } else {
-//     timeDate = new Date().toUTCString()
-//   }
-//   res.json({ time: timeDate })
-// })
 
 app.listen(port, () => {
   console.log(`Listening at port: ${port}`)
